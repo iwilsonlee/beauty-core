@@ -1,0 +1,9 @@
+dist/
+node_modules/
+yarn.lock
+.env
+docker-compose.override.yml
+build
+.gradle
+.project
+.settings
