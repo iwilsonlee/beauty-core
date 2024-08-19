@@ -100,9 +100,10 @@ public class ConfigLoader
 		if (new File(SystemGlobals.getValue("impl.config")).exists()) {
 			SystemGlobals.loadAdditionalDefaults(SystemGlobals.getValue("impl.config"));
 		}
-		if (new File(SystemGlobals.getValue(ConfigKeys.SMS_FILTER_KEY_WORDS_CONFIG)).exists()) {
-			SystemGlobals.loadAdditionalDefaults(SystemGlobals.getValue(ConfigKeys.SMS_FILTER_KEY_WORDS_CONFIG));
-		}
+		 String smsConfig = SystemGlobals.getValue(ConfigKeys.SMS_FILTER_KEY_WORDS_CONFIG);
+		 if (new File(smsConfig).exists()) {
+		 	SystemGlobals.loadAdditionalDefaults(SystemGlobals.getValue(ConfigKeys.SMS_FILTER_KEY_WORDS_CONFIG));
+		 }
 	}
 	
 	/**
