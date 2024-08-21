@@ -79,7 +79,7 @@ public class PooledDruidConnection2 extends DBConnection
 		this.ds.setInitialSize(2);
 		this.ds.setMaxWait(SystemGlobals.getIntValue(ConfigKeys.DATABASE_MAXIDLETIME2));
 		this.ds.setUseUnfairLock(true);//使用非公平锁
-//		this.ds.setValidationQuery("select * test_table limit 1");
+		this.ds.setValidationQuery("select 1");
 		this.ds.setTestWhileIdle(true);
 		this.ds.setTimeBetweenEvictionRunsMillis(60*1000L);
 		
