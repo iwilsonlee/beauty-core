@@ -189,7 +189,7 @@ public class GPortal extends GPortalBaseServlet {
 				memberSessionHandle = (MemberSessionHandle)object ;
 				memberSessionHandle.refreshSession();
 			}else {
-				System.out.println("Warnning: the class MemberSessionHandleImpl is not found! and the MemberSessionHandle.refreshSession() is not executed!");
+				logger.info("Warnning: the class MemberSessionHandleImpl is not found! and the MemberSessionHandle.refreshSession() is not executed!");
 			}
 			
 			
@@ -246,7 +246,7 @@ public class GPortal extends GPortalBaseServlet {
 						//检查request请求，在此位置进行检查的目的是为了能使用GPortalExecutionContext，这样就能使用cache或dao之类
 						isRedirect = globalHandle.checkRequest(request, response);
 					}else {
-						System.out.println("Warnning: the class AttributeHandleImpl is not found! and the AttributeSettingHandle.setAttribute is not executed!");
+						logger.info("Warnning: the class AttributeHandleImpl is not found! and the AttributeSettingHandle.setAttribute is not executed!");
 					}
 					
 					if (isRedirect) {
@@ -497,7 +497,7 @@ public class GPortal extends GPortalBaseServlet {
 	 */
 	public void destroy() {
 		super.destroy();
-		System.out.println("Destroying CMWEBGAME...");
+		logger.info("Destroying CMWEBGAME...");
 
 		try {
 			DBConnection.getImplementation().realReleaseAllConnections();
