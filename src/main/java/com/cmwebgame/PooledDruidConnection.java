@@ -82,7 +82,10 @@ public class PooledDruidConnection extends DBConnection
 		this.ds.setUseUnfairLock(true);//使用非公平锁
 		this.ds.setValidationQuery("select 1");
 		this.ds.setTestWhileIdle(true);
+		this.ds.setTestOnBorrow(true);
+		this.ds.setTestOnReturn(false);
 		this.ds.setTimeBetweenEvictionRunsMillis(60*1000L);
+		this.ds.setMinEvictableIdleTimeMillis(300000);
 		this.ds.setPoolPreparedStatements(false);
 		
 		//以下开启慢速sql的log记录功能(会消耗一定的性能),start
