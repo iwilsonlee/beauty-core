@@ -14,7 +14,7 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '0.2.3'
+version = '0.2.5'
 group = 'com.github.iwilsonlee'
 def artifactId = project.name
 

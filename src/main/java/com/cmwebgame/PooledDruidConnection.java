@@ -44,6 +44,7 @@ package com.cmwebgame;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.List;
 
 import com.alibaba.druid.filter.Filter;
@@ -143,7 +144,69 @@ public class PooledDruidConnection extends DBConnection
 	 */
 	public void realReleaseAllConnections() throws Exception
 	{
-		if(this.ds != null)
-		    this.ds.close();
+		if(this.ds != null) {
+			this.ds.close();
+		}
+		
+		// 注销 Druid JDBC 驱动
+		try {
+			// 遍历所有驱动并注销 Druid 相关驱动
+			java.util.Enumeration<java.sql.Driver> drivers = java.sql.DriverManager.getDrivers();
+			while (drivers.hasMoreElements()) {
+				java.sql.Driver driver = drivers.nextElement();
+				if (driver.getClass().getName().contains("druid")) {
+					java.sql.DriverManager.deregisterDriver(driver);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// 注销 MySQL JDBC 驱动并停止 AbandonedConnectionCleanupThread
+		try {
+			// 注销 MySQL JDBC 驱动
+			java.util.Enumeration<java.sql.Driver> drivers = java.sql.DriverManager.getDrivers();
+			while (drivers.hasMoreElements()) {
+				java.sql.Driver driver = drivers.nextElement();
+				if (driver.getClass().getName().contains("mysql")) {
+					java.sql.DriverManager.deregisterDriver(driver);
+				}
+			}
+			
+			// 尝试多种方法停止 MySQL 的 AbandonedConnectionCleanupThread
+			Class<?> cls = Class.forName("com.mysql.cj.jdbc.AbandonedConnectionCleanupThread");
+			
+			// 尝试 checkedShutdown 方法 (MySQL 8.0+)
+			try {
+				java.lang.reflect.Method shutdownMethod = cls.getMethod("checkedShutdown");
+				shutdownMethod.invoke(null);
+				return; // 如果成功，直接返回
+			} catch (NoSuchMethodException e) {
+				// 忽略，尝试下一个方法
+			}
+			
+			// 尝试 uncheckedShutdown 方法
+			try {
+				java.lang.reflect.Method shutdownMethod = cls.getMethod("uncheckedShutdown");
+				shutdownMethod.invoke(null);
+				return; // 如果成功，直接返回
+			} catch (NoSuchMethodException e) {
+				// 忽略，尝试下一个方法
+			}
+			
+			// 尝试直接访问和中断线程
+			try {
+				java.lang.reflect.Field threadField = cls.getDeclaredField("abandonedConnectionCleanupThread");
+				threadField.setAccessible(true);
+				Thread thread = (Thread) threadField.get(null);
+				if (thread != null) {
+					thread.interrupt();
+				}
+			} catch (Exception e) {
+				// 忽略
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
