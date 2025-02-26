@@ -45,7 +45,6 @@ package com.cmwebgame;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 
-
 import com.cmwebgame.exceptions.DatabaseException;
 import com.cmwebgame.util.preferences.ConfigKeys;
 import com.cmwebgame.util.preferences.SystemGlobals;
@@ -75,6 +74,17 @@ public class C3P0PooledConnection extends DBConnection
 		this.ds.setAcquireIncrement(SystemGlobals.getIntValue(ConfigKeys.DATABASE_ACQUIREINCREMENT));
 		this.ds.setMaxIdleTime(SystemGlobals.getIntValue(ConfigKeys.DATABASE_MAXIDLETIME));
 		this.ds.setAutomaticTestTable("c3p0TestTable");
+		
+		// Add these configurations to handle connection timeout issues
+		this.ds.setTestConnectionOnCheckout(true); // Test connections when getting from pool
+		this.ds.setTestConnectionOnCheckin(true); // Test connections when returning to pool
+		this.ds.setPreferredTestQuery("SELECT 1"); // Simple validation query
+		this.ds.setMaxConnectionAge(3600); // Maximum connection lifetime in seconds (1 hour)
+		this.ds.setMaxIdleTimeExcessConnections(300); // Shrink pool after 5 minutes of excess idle connections
+		this.ds.setCheckoutTimeout(30000); // 30 seconds checkout timeout
+		this.ds.setAcquireRetryAttempts(3); // Retry 3 times before giving up
+		this.ds.setAcquireRetryDelay(1000); // 1 second between retries
+		
 		this.extraParams();
 	}
 	

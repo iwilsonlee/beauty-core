@@ -84,9 +84,15 @@ public class PooledDruidConnection extends DBConnection
 		this.ds.setTestWhileIdle(true);
 		this.ds.setTestOnBorrow(true);
 		this.ds.setTestOnReturn(false);
-		this.ds.setTimeBetweenEvictionRunsMillis(60*1000L);
-		this.ds.setMinEvictableIdleTimeMillis(300000);
+		this.ds.setTimeBetweenEvictionRunsMillis(30*1000L); // Check every 30 seconds
+		this.ds.setMinEvictableIdleTimeMillis(300000); // 5 minutes
 		this.ds.setPoolPreparedStatements(false);
+		
+		// Add these configurations to handle connection timeout issues
+		this.ds.setRemoveAbandoned(true); // Remove abandoned connections
+		this.ds.setRemoveAbandonedTimeout(300); // 5 minutes timeout for abandoned connections
+		this.ds.setLogAbandoned(true); // Log abandoned connections
+		this.ds.setConnectionProperties("druid.keepAlive=true"); // Keep connections alive
 		
 		//以下开启慢速sql的log记录功能(会消耗一定的性能),start
 		this.ds.setFilters("log4j");//使用Logger
